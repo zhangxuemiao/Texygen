@@ -77,20 +77,21 @@ class Discriminator(object):
     A CNN for text classification.
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
     """
+
     def __init__(
             self, sequence_length, num_classes, vocab_size,
-            emd_dim, filter_sizes, num_filters, l2_reg_lambda=0.0, batch_size=32, reference_size=16, dropout_keep_prob = .75):
+            emd_dim, filter_sizes, num_filters, l2_reg_lambda=0.0, batch_size=32, reference_size=16,
+            dropout_keep_prob=.75):
         # Placeholders for input, output and dropout
-        self.input_x = tf.placeholder(tf.int32, [batch_size,  sequence_length], name="input_x")
+        self.input_x = tf.placeholder(tf.int32, [batch_size, sequence_length], name="input_x")
         self.input_ref = tf.placeholder(tf.int32, [reference_size, sequence_length], name="input_ref")
-        self.input_y = tf.placeholder(tf.float32, [batch_size,  num_classes], name="input_y")
+        self.input_y = tf.placeholder(tf.float32, [batch_size, num_classes], name="input_y")
         self.dropout_keep_prob = dropout_keep_prob
 
         # Keeping track of l2 regularization loss (optional)
         l2_loss = tf.constant(0.0)
 
         with tf.variable_scope('discriminator'):
-
             # Embedding layer
             with tf.device('/cpu:0'), tf.name_scope("embedding"):
                 self.W = tf.Variable(
@@ -198,7 +199,8 @@ class Discriminator(object):
                 self.pos_vec = tf.nn.embedding_lookup(tf.transpose(self.input_y), 0)
                 losses_minus = self.log_score * self.neg_vec
                 losses_posit = self.log_score * self.pos_vec
-                self.loss = (- tf.reduce_sum(losses_minus) / tf.maximum(tf.reduce_sum(self.neg_vec), 1e-5) + tf.reduce_sum(
+                self.loss = (- tf.reduce_sum(losses_minus) / tf.maximum(tf.reduce_sum(self.neg_vec),
+                                                                        1e-5) + tf.reduce_sum(
                     losses_posit) / tf.maximum(tf.reduce_sum(self.pos_vec), 1e-5)) / reference_size
 
         self.params = [param for param in tf.trainable_variables() if 'discriminator' in param.name]

@@ -44,7 +44,8 @@ class Seqgan(Gan):
         self.add_metric(inll)
 
         from utils.metrics.DocEmbSim import DocEmbSim
-        docsim = DocEmbSim(oracle_file=self.oracle_file, generator_file=self.generator_file, num_vocabulary=self.vocab_size)
+        docsim = DocEmbSim(oracle_file=self.oracle_file, generator_file=self.generator_file,
+                           num_vocabulary=self.vocab_size)
         self.add_metric(docsim)
 
     def train_discriminator(self):
@@ -57,7 +58,7 @@ class Seqgan(Gan):
                 self.discriminator.input_x: x_batch,
                 self.discriminator.input_y: y_batch,
             }
-            loss,_ = self.sess.run([self.discriminator.d_loss, self.discriminator.train_op], feed)
+            loss, _ = self.sess.run([self.discriminator.d_loss, self.discriminator.train_op], feed)
             print(loss)
 
     def evaluate(self):
@@ -286,13 +287,13 @@ class Seqgan(Gan):
 
     def init_real_metric(self):
         from utils.metrics.DocEmbSim import DocEmbSim
-        docsim = DocEmbSim(oracle_file=self.oracle_file, generator_file=self.generator_file, num_vocabulary=self.vocab_size)
+        docsim = DocEmbSim(oracle_file=self.oracle_file, generator_file=self.generator_file,
+                           num_vocabulary=self.vocab_size)
         self.add_metric(docsim)
 
         inll = Nll(data_loader=self.gen_data_loader, rnn=self.generator, sess=self.sess)
         inll.set_name('nll-test')
         self.add_metric(inll)
-
 
     def train_real(self, data_loc=None):
         from utils.text_process import code_to_text
@@ -360,3 +361,6 @@ class Seqgan(Gan):
                 self.train_discriminator()
 
 
+if __name__ == '__main__':
+    seq_gan = Seqgan()
+    seq_gan.train_oracle()
