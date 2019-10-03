@@ -4,6 +4,8 @@ from tensorflow.python.ops import tensor_array_ops, control_flow_ops
 
 
 class Reward(object):
+    """对应原先程序的Rollout部分"""
+
     def __init__(self, lstm, update_rate):
         self.lstm = lstm
         self.update_rate = update_rate
@@ -77,8 +79,14 @@ class Reward(object):
         self.gen_x = tf.transpose(self.gen_x, perm=[1, 0])  # batch_size x seq_length
 
     def get_reward(self, sess, input_x, rollout_num, discriminator):
+        # @ debug begin
+        # print(f'rollout_num: type :{type(rollout_num)}, {rollout_num}')
+        # print(f'input_x: type :{type(input_x)}, {np.array(input_x).shape}')
+        # @ debug end
+
         rewards = []
         for i in range(rollout_num):
+            # given_num between 1 to sequence_length - 1 for a part completed sentence
             for given_num in range(1, len(input_x[0])):
                 feed = {self.x: input_x, self.given_num: given_num}
                 samples = sess.run(self.gen_x, feed)
@@ -97,6 +105,7 @@ class Reward(object):
             # scores = sess.run(discriminator.scores, feed)
             # print(f'scores: type :{type(scores)}, shape:{scores.shape}:\n {scores}')
             #   # -> scores: type :<class 'numpy.ndarray'>, shape:(64, 2):
+            # print(f'rewards_np inner 1: shape:{np.array(rewards).shape}:\n {np.array(rewards)}')
             # @ debug end
 
             ypred_for_auc = sess.run(discriminator.ypred_for_auc, feed)
@@ -105,6 +114,15 @@ class Reward(object):
                 rewards.append(ypred)
             else:
                 rewards[(len(input_x[0]) - 1)] += ypred
+
+            # @ debug begin
+            # print(f'rewards_np inner 2: shape:{np.array(rewards).shape}:\n {np.array(rewards)}')
+            # @ debug end
+
+        # @ debug begin
+        # rewards_np = np.array(rewards)
+        # print(f'rewards_np outer: shape:{rewards_np.shape}:\n {rewards_np}')
+        # @ debug end
 
         reward_res = np.transpose(np.array(rewards)) / (1.0 * rollout_num)  # batch_size x seq_length
         return reward_res
