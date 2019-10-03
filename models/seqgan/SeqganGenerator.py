@@ -117,14 +117,14 @@ class Generator(object):
         tmp_3_res = tf.reduce_sum(tmp_3, 1)
         rewards_res = tf.reshape(self.rewards, [-1])
         self.g_loss = -tf.reduce_sum(tmp_3_res * rewards_res)
-        print(f'tmp_1 ->{tmp_1}')
-        print(f'self.g_predictions ->{self.g_predictions}')
-        print(f'tmp_2 ->{tmp_2}')
-        print(f'tmp_3 ->{tmp_3}')
-        print(f'tmp_3_res ->{tmp_3_res}')
-        print(f'self.rewards ->{self.rewards}')
-        print(f'rewards_res ->{rewards_res}')
-        print(f'self.g_loss ->{self.g_loss}')
+        print(f'tmp_1 -> {tmp_1}')
+        print(f'self.g_predictions -> {self.g_predictions}')
+        print(f'tmp_2 -> {tmp_2}')
+        print(f'tmp_3 -> {tmp_3}')
+        print(f'tmp_3_res -> {tmp_3_res}')
+        print(f'self.rewards -> {self.rewards}')
+        print(f'rewards_res -> {rewards_res}')
+        print(f'self.g_loss -> {self.g_loss}')
         # @ debug end
 
         self.g_loss = -tf.reduce_sum(
