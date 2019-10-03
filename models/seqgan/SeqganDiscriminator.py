@@ -83,20 +83,12 @@ class Discriminator(object):
                     W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
                     b = tf.Variable(tf.constant(0.1, shape=[num_filter]), name="b")
                     conv = tf.nn.conv2d(
-                        self.embedded_chars_expanded,
-                        W,
-                        strides=[1, 1, 1, 1],
-                        padding="VALID",
-                        name="conv")
+                        self.embedded_chars_expanded, W, strides=[1, 1, 1, 1], padding="VALID", name="conv")
                     # Apply nonlinearity
                     h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
                     # Maxpooling over the outputs
-                    pooled = tf.nn.max_pool(
-                        h,
-                        ksize=[1, sequence_length - filter_size + 1, 1, 1],
-                        strides=[1, 1, 1, 1],
-                        padding='VALID',
-                        name="pool")
+                    pooled = tf.nn.max_pool(h, ksize=[1, sequence_length - filter_size + 1, 1, 1],
+                                            strides=[1, 1, 1, 1], padding='VALID', name="pool")
                     pooled_outputs.append(pooled)
 
             # Combine all the pooled features

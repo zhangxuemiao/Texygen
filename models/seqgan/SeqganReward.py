@@ -92,12 +92,19 @@ class Reward(object):
 
             # the last token reward
             feed = {discriminator.input_x: input_x}
+
+            # @ debug begin
+            # scores = sess.run(discriminator.scores, feed)
+            # print(f'scores: type :{type(scores)}, shape:{scores.shape}:\n {scores}')
+            #   # -> scores: type :<class 'numpy.ndarray'>, shape:(64, 2):
+            # @ debug end
+
             ypred_for_auc = sess.run(discriminator.ypred_for_auc, feed)
             ypred = np.array([item[1] for item in ypred_for_auc])
             if i == 0:
                 rewards.append(ypred)
             else:
-                rewards[(len(input_x[0])-1)] += ypred
+                rewards[(len(input_x[0]) - 1)] += ypred
 
         reward_res = np.transpose(np.array(rewards)) / (1.0 * rollout_num)  # batch_size x seq_length
         return reward_res
@@ -235,6 +242,7 @@ class Reward(object):
             logits = tf.matmul(hidden_state, self.Wo) + self.bo
             # output = tf.nn.softmax(logits)
             return logits
+
         return unit
 
     def update_params(self):

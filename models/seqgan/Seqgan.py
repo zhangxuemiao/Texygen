@@ -59,7 +59,7 @@ class Seqgan(Gan):
                 self.discriminator.input_y: y_batch,
             }
             loss, _ = self.sess.run([self.discriminator.d_loss, self.discriminator.train_op], feed)
-            print(loss)
+            print(f'loss in {self.train_discriminator}: {loss}')
 
     def evaluate(self):
         generate_samples(self.sess, self.generator, self.batch_size, self.generate_num, self.generator_file)
@@ -134,12 +134,23 @@ class Seqgan(Gan):
         self.reset_epoch()
         print('adversarial training:')
         self.reward = Reward(self.generator, .8)
+
+        # @ debug begin
+        print(f'self.reward -> {self.reward}')
+        # @ debug end
+
         for epoch in range(self.adversarial_epoch_num):
             # print('epoch:' + str(epoch))
             start = time()
             for index in range(1):
                 samples = self.generator.generate(self.sess)
                 rewards = self.reward.get_reward(self.sess, samples, 16, self.discriminator)
+
+                # @ debug begin
+                print(f'{epoch}-{index}: samples type :{type(samples)}, shape:{samples.shape}:\n {samples}')
+                print(f'{epoch}-{index}: rewards type :{type(rewards)}, shape:{rewards.shape}:\n {rewards}')
+                # @ debug end
+
                 feed = {
                     self.generator.x: samples,
                     self.generator.rewards: rewards
